@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Warehouse — Сканування</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script defer src="js/common.js"></script>
+  <script defer src="js/scan.js"></script>
+</head>
+<body class="page-scan">
+  <header class="topbar">
+    <div class="brand">Warehouse — Сканування</div>
+    <nav class="top-actions">
+      <a href="dashboard.html" class="btn small ghost">Назад</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card big-card">
+      <h2>Сканування коду замовлення</h2>
+      <p class="muted">Підключений сканер надсилає код як клавіатурний ввід. Або введіть номер замовлення вручну.</p>
+
+      <div class="scan-panel">
+        <input id="scannerInput" class="large-input" autocomplete="off" placeholder="Введіть або відскануйте номер замовлення...">
+        <div class="scan-actions">
+          <button id="scanBtn" class="btn">Сканувати</button>
+          <button id="generateBtn" class="btn ghost">Згенерувати штрихкод для поточного номера</button>
+        </div>
+      </div>
+
+      <div class="barcode-area">
+        <svg id="barcode"></svg>
+        <div id="barcodeValue" class="muted"></div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="history">Історія</button>
+        <button class="tab" data-tab="config">Налаштування правил</button>
+      </div>
+
+      <div class="tab-content" id="history">
+        <div class="history-controls">
+          <button id="clearHist" class="btn ghost">Очистити</button>
+          <button id="exportHist" class="btn">Експортувати CSV</button>
+        </div>
+        <h3>Історія сканування</h3>
+        <ul id="scanList" class="list"></ul>
+        <p id="noHistory" class="muted">Поки немає записів.</p>
+      </div>
+
+      <div class="tab-content hidden" id="config">
+        <h3>Правила первинного сортування</h3>
+        <p class="muted">Встанови правило, як сортувати за номером замовлення (наприклад, префікс/регулярний вираз).</p>
+        <label>Префікс (опційно)
+          <input id="rulePrefix" placeholder="наприклад ORD-"/>
+        </label>
+        <div class="row-between">
+          <button id="saveRules" class="btn">Зберегти</button>
+          <button id="resetRules" class="btn ghost">Скинути</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

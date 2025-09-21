@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Warehouse — Збирання</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/common.js"></script>
+  <script defer src="js/pack.js"></script>
+</head>
+<body class="page-pack">
+  <header class="topbar">
+    <div class="brand">Warehouse — Збирання</div>
+    <nav class="top-actions">
+      <a href="dashboard.html" class="btn small ghost">Назад</a>
+    </nav>
+  </header>
+
+  <main class="container grid-2">
+    <section class="card">
+      <h2>Ваші завдання</h2>
+      <p class="muted">Список picklist'ів, призначених вам.</p>
+      <ul id="tasksList" class="list"></ul>
+      <div class="controls">
+        <button id="refreshTasks" class="btn">Оновити</button>
+      </div>
+    </section>
+
+    <section id="taskDetails" class="card hidden">
+      <h3>Деталі завдання</h3>
+      <div id="taskInfo"></div>
+      <div class="row-between">
+        <button id="markPicked" class="btn primary">Позначити як зібране</button>
+        <button id="markPartial" class="btn ghost">Частково</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

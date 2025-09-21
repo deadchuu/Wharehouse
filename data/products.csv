@@ -1,0 +1,51 @@
+product_id,sku,name,category,price,stock,ean,image_url,supplier,weight
+p001,SM-WHEY-01,Gold Whey Protein 2kg,Supplements,199.99,45,5901234000001,https://example.com/img/p001.jpg,SportMax,2000
+p002,SM-CRE-01,Creatine Monohydrate 300g,Supplements,59.99,120,5901234000018,https://example.com/img/p002.jpg,SportMax,300
+p003,SM-BCAA-01,BCAA 4:1:1 500g,Supplements,89.50,80,5901234000025,https://example.com/img/p003.jpg,SportMax,500
+p004,SM-PROTEIN-BAR-01,Protein Bar Cocoa,Food,4.50,350,5901234000032,https://example.com/img/p004.jpg,SportMax,60
+p005,SM-PROTEIN-BAR-02,Protein Bar Peanut,Food,4.50,300,5901234000049,https://example.com/img/p005.jpg,SportMax,60
+p006,SM-OMEGA-01,Omega-3 1000mg 120caps,Supplements,79.99,60,5901234000056,https://example.com/img/p006.jpg,SportMax,120
+p007,SM-GLUT-01,Glutamine 500g,Supplements,49.99,75,5901234000063,https://example.com/img/p007.jpg,SportMax,500
+p008,SM-VITAMIN-01,Multivitamin 60tabs,Supplements,39.99,200,5901234000070,https://example.com/img/p008.jpg,SportMax,60
+p009,SM-CARBS-01,Maltodextrin 2.5kg,Supplements,89.00,40,5901234000087,https://example.com/img/p009.jpg,SportMax,2500
+p010,SM-PRE-01,Pre-workout Citrus 300g,Supplements,119.00,90,5901234000094,https://example.com/img/p010.jpg,SportMax,300
+p011,SM-SHAKER-01,Shaker 700ml,Accessories,19.99,230,5901234000100,https://example.com/img/p011.jpg,SportMax,200
+p012,SM-BELT-01,Weightlifting Belt L,SportGear,89.99,55,5901234000117,https://example.com/img/p012.jpg,SportMax,800
+p013,SM-GLOVES-01,Lifting Gloves M,Accessories,29.99,120,5901234000124,https://example.com/img/p013.jpg,SportMax,150
+p014,SM-SOCKS-01,Compression Socks L,Accessories,14.99,200,5901234000131,https://example.com/img/p014.jpg,SportMax,80
+p015,SM-BALL-01,Medicine Ball 6kg,SportGear,69.99,40,5901234000148,https://example.com/img/p015.jpg,SportMax,6000
+p016,SM-RUN-01,Running Shorts M,Clothing,39.99,150,5901234000155,https://example.com/img/p016.jpg,SportMax,150
+p017,SM-HOOD-01,Hoodie L,Clothing,89.99,60,5901234000162,https://example.com/img/p017.jpg,SportMax,700
+p018,SM-TSHIRT-01,Training T-Shirt S,Clothing,24.99,210,5901234000179,https://example.com/img/p018.jpg,SportMax,160
+p019,SM-SNEAK-01,Training Shoes 42,Shoes,249.99,35,5901234000186,https://example.com/img/p019.jpg,SportMax,900
+p020,SM-ROPE-01,Battle Rope 10m,Accessories,129.99,25,5901234000193,https://example.com/img/p020.jpg,SportMax,7000
+p021,SM-YOGA-01,Yoga Mat 6mm,Accessories,49.99,85,5901234000209,https://example.com/img/p021.jpg,SportMax,1000
+p022,SM-BAND-01,Resistance Band Set,Accessories,24.99,160,5901234000216,https://example.com/img/p022.jpg,SportMax,250
+p023,SM-FOAM-01,Foam Roller 30cm,Accessories,34.99,90,5901234000223,https://example.com/img/p023.jpg,SportMax,1200
+p024,SM-TRIM-01,Fat Burner 90caps,Supplements,99.99,50,5901234000230,https://example.com/img/p024.jpg,SportMax,90
+p025,SM-CASE-01,Phone Armband,Accessories,12.99,220,5901234000247,https://example.com/img/p025.jpg,SportMax,80
+p026,SM-BPUMP-01,Air Pump for balls,Accessories,9.99,140,5901234000254,https://example.com/img/p026.jpg,SportMax,150
+p027,SM-KETTLE-01,Kettlebell 8kg,SportGear,39.99,45,5901234000261,https://example.com/img/p027.jpg,SportMax,8000
+p028,SM-PULS-01,Heart Rate Monitor,Accessories,79.99,67,5901234000278,https://example.com/img/p028.jpg,SportMax,120
+p029,SM-WATER-01,Hydration Bottle 1L,Accessories,14.99,330,5901234000285,https://example.com/img/p029.jpg,SportMax,120
+p030,SM-TRX-01,Suspension Trainer Kit,SportGear,149.99,30,5901234000292,https://example.com/img/p030.jpg,SportMax,1200
+p031,SM-BELT-02,Weightlifting Belt M,SportGear,79.99,44,5901234000308,https://example.com/img/p031.jpg,SportMax,700
+p032,SM-GLU-02,Glutamine 300g,Supplements,34.99,95,5901234000315,https://example.com/img/p032.jpg,SportMax,300
+p033,SM-WHEY-02,Gold Whey Protein 1kg,Supplements,109.99,60,5901234000322,https://example.com/img/p033.jpg,SportMax,1000
+p034,SM-CLA-01,CLA 90 caps,Supplements,44.99,80,5901234000339,https://example.com/img/p034.jpg,SportMax,90
+p035,SM-THERMO-01,Thermo Burner 60caps,Supplements,69.99,77,5901234000346,https://example.com/img/p035.jpg,SportMax,90
+p036,SM-GAIN-01,Mass Gainer 3kg,Supplements,219.99,22,5901234000353,https://example.com/img/p036.jpg,SportMax,3000
+p037,SM-PROTEIN-DR,Protein Drink 500ml,Food,6.50,420,5901234000360,https://example.com/img/p037.jpg,SportMax,500
+p038,SM-STRAP-01,Weighted Strap pair,Accessories,29.99,110,5901234000377,https://example.com/img/p038.jpg,SportMax,250
+p039,SM-EQ-01,Exercise Band 20kg,Accessories,19.99,140,5901234000384,https://example.com/img/p039.jpg,SportMax,200
+p040,SM-MASK-01,Training Mask S,Accessories,49.99,70,5901234000391,https://example.com/img/p040.jpg,SportMax,120
+p041,SM-ROLLER-02,Muscle Roller Stick,Accessories,24.99,95,5901234000407,https://example.com/img/p041.jpg,SportMax,250
+p042,SM-GLU-03,Glucosamine 120tabs,Supplements,59.99,65,5901234000414,https://example.com/img/p042.jpg,SportMax,120
+p043,SM-LIFT-01,Chalk Bag,Accessories,14.99,180,5901234000421,https://example.com/img/p043.jpg,SportMax,50
+p044,SM-STRAP-02,Ankle Strap,Accessories,19.99,140,5901234000438,https://example.com/img/p044.jpg,SportMax,100
+p045,SM-ROLL-03,Yoga Wheel,Accessories,34.99,45,5901234000445,https://example.com/img/p045.jpg,SportMax,600
+p046,SM-HEALTH-01,Collagen 300g,Supplements,79.99,88,5901234000452,https://example.com/img/p046.jpg,SportMax,300
+p047,SM-BRACE-01,Knee Brace L,Accessories,39.99,55,5901234000469,https://example.com/img/p047.jpg,SportMax,180
+p048,SM-SUPP-01,Vegan Protein 1kg,Supplements,129.99,60,5901234000476,https://example.com/img/p048.jpg,SportMax,1000
+p049,SM-TRACK-01,Interval Timer,Accessories,24.99,130,5901234000483,https://example.com/img/p049.jpg,SportMax,150
+p050,SM-POWER-01,Power Band Heavy,Accessories,34.99,95,5901234000490,https://example.com/img/p050.jpg,SportMax,300

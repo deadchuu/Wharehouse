@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Warehouse — Панель</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/common.js"></script>
+  <script defer src="js/dashboard.js"></script>
+</head>
+<body class="page-dashboard">
+  <header class="topbar">
+    <div class="brand">Warehouse</div>
+    <nav class="top-actions">
+      <span id="userRole" class="muted"></span>
+      <button id="logoutBtn" class="btn small ghost">Вихід</button>
+    </nav>
+  </header>
+
+  <main class="container grid-3">
+    <div class="card action-card">
+      <h2>Сканування</h2>
+      <p class="muted">Швидке сканування замовлень / посилок.</p>
+      <a class="btn" href="scan.html">Перейти</a>
+    </div>
+
+    <div class="card action-card">
+      <h2>Збирання (Packing)</h2>
+      <p class="muted">Список завдань для збирачів.</p>
+      <a class="btn" href="pack.html">Перейти</a>
+    </div>
+
+    <div class="card action-card" id="adminCard">
+      <h2>Адмін панель</h2>
+      <p class="muted">Управління товарами, списками та статистика (тільки для адмінів).</p>
+      <a class="btn" href="admin.html">Перейти</a>
+    </div>
+  </main>
+</body>
+</html>

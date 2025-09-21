@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Warehouse — Адмін</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/common.js"></script>
+  <script defer src="js/admin.js"></script>
+</head>
+<body class="page-admin">
+  <header class="topbar">
+    <div class="brand">Warehouse — Адмін</div>
+    <nav class="top-actions">
+      <a href="dashboard.html" class="btn small ghost">Назад</a>
+    </nav>
+  </header>
+
+  <main class="container grid-2">
+    <section class="card">
+      <h2>Товари</h2>
+      <div class="controls">
+        <input id="productImport" type="file" accept=".csv" />
+        <button id="exportProducts" class="btn">Експортувати CSV</button>
+        <button id="addSampleProducts" class="btn ghost">Завантажити з /data/products.csv</button>
+      </div>
+      <ul id="productList" class="list"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Статистика</h2>
+      <div id="stats">
+        <p class="muted">(Зразок) зібрано: <strong id="statPicked">0</strong></p>
+        <p class="muted">в обробці: <strong id="statPending">0</strong></p>
+      </div>
+      <h3>Scan history (CSV)</h3>
+      <div class="controls">
+        <button id="exportScanAll" class="btn">Експортувати історію</button>
+        <button id="clearScanAll" class="btn ghost">Очистити історію</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
