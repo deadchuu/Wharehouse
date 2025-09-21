@@ -1,40 +1,39 @@
 <!doctype html>
-<html lang="uk">
+<html lang="pl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Warehouse — Панель</title>
+  <title>Panel — Sortowanie paczek</title>
   <link rel="stylesheet" href="css/styles.css">
   <script defer src="js/common.js"></script>
   <script defer src="js/dashboard.js"></script>
 </head>
-<body class="page-dashboard">
-  <header class="topbar">
-    <div class="brand">Warehouse</div>
-    <nav class="top-actions">
-      <span id="userRole" class="muted"></span>
-      <button id="logoutBtn" class="btn small ghost">Вихід</button>
-    </nav>
+<body class="page page-dashboard">
+  <header class="header">
+    <div class="container">
+      <div class="site-title">Sortowanie paczek</div>
+      <div class="nav-right">
+        <span id="sessionUser" class="muted"></span>
+        <button id="logoutBtn" class="btn ghost">Wyloguj</button>
+      </div>
+    </div>
   </header>
 
-  <main class="container grid-3">
-    <div class="card action-card">
-      <h2>Сканування</h2>
-      <p class="muted">Швидке сканування замовлень / посилок.</p>
-      <a class="btn" href="scan.html">Перейти</a>
-    </div>
+  <main class="container grid">
+    <a class="card action" href="scan_select.html">
+      <h2>Skanowanie / tworzenie list</h2>
+      <p class="muted">Wybierz i stwórz listę do zbiorki (picklist).</p>
+    </a>
 
-    <div class="card action-card">
-      <h2>Збирання (Packing)</h2>
-      <p class="muted">Список завдань для збирачів.</p>
-      <a class="btn" href="pack.html">Перейти</a>
-    </div>
+    <a class="card action" href="pack.html">
+      <h2>Zbieranie</h2>
+      <p class="muted">Okno dla zbieraczy — pokazuje status list i postęp.</p>
+    </a>
 
-    <div class="card action-card" id="adminCard">
-      <h2>Адмін панель</h2>
-      <p class="muted">Управління товарами, списками та статистика (тільки для адмінів).</p>
-      <a class="btn" href="admin.html">Перейти</a>
-    </div>
+    <a id="adminCard" class="card action" href="admin.html">
+      <h2>Administracja</h2>
+      <p class="muted">Zarządzaj produktami i zamówieniami (tylko dla adminów).</p>
+    </a>
   </main>
 </body>
 </html>

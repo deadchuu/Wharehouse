@@ -1,43 +1,42 @@
 <!doctype html>
-<html lang="uk">
+<html lang="pl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Warehouse — Адмін</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Administracja — Produkty i zamówienia</title>
   <link rel="stylesheet" href="css/styles.css">
   <script defer src="js/common.js"></script>
   <script defer src="js/admin.js"></script>
 </head>
-<body class="page-admin">
-  <header class="topbar">
-    <div class="brand">Warehouse — Адмін</div>
-    <nav class="top-actions">
-      <a href="dashboard.html" class="btn small ghost">Назад</a>
-    </nav>
+<body class="page page-admin">
+  <header class="header thin">
+    <div class="container">
+      <div class="site-title">Administracja</div>
+      <div class="nav-right">
+        <a href="dashboard.html" class="btn ghost">Powrót</a>
+      </div>
+    </div>
   </header>
 
-  <main class="container grid-2">
+  <main class="container two-col">
     <section class="card">
-      <h2>Товари</h2>
-      <div class="controls">
-        <input id="productImport" type="file" accept=".csv" />
-        <button id="exportProducts" class="btn">Експортувати CSV</button>
-        <button id="addSampleProducts" class="btn ghost">Завантажити з /data/products.csv</button>
+      <h3>Zamówienia</h3>
+      <p class="muted small">Lista zamówień (filtrowanie, sortowanie). Administrator może tworzyć listy bezpośrednio tutaj.</p>
+      <div class="controls-row">
+        <button id="reloadOrders" class="btn outline">Przeładuj z CSV</button>
+        <button id="openCreateFromAdmin" class="btn">Utwórz listę z zamówień</button>
       </div>
-      <ul id="productList" class="list"></ul>
+      <div id="adminOrdersList" style="max-height:520px;overflow:auto;margin-top:8px"></div>
     </section>
 
     <section class="card">
-      <h2>Статистика</h2>
-      <div id="stats">
-        <p class="muted">(Зразок) зібрано: <strong id="statPicked">0</strong></p>
-        <p class="muted">в обробці: <strong id="statPending">0</strong></p>
+      <h3>Produkty</h3>
+      <p class="muted small">Produkty pobierane z CSV. Możesz je nadpisać plikiem CSV przez upload.</p>
+      <div class="controls-row">
+        <input id="productCsvImport" type="file" accept=".csv" />
+        <button id="reloadProducts" class="btn outline">Przeładuj z CSV</button>
       </div>
-      <h3>Scan history (CSV)</h3>
-      <div class="controls">
-        <button id="exportScanAll" class="btn">Експортувати історію</button>
-        <button id="clearScanAll" class="btn ghost">Очистити історію</button>
-      </div>
+      <ul id="adminProductsList" class="list" style="max-height:420px;overflow:auto"></ul>
     </section>
   </main>
 </body>

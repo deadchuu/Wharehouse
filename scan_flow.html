@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Skanowanie — Flow</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/common.js"></script>
+  <script defer src="js/scan_flow.js"></script>
+</head>
+<body class="page page-scan-flow">
+  <header class="header thin">
+    <div class="container">
+      <div class="site-title">Skanowanie — Flow</div>
+      <div class="nav-right"><a href="dashboard.html" class="btn ghost">Powrót</a></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h3 id="plName">Picklist: —</h3>
+      <div class="small muted" id="plMeta"></div>
+
+      <div style="margin-top:12px" class="block center">
+        <label class="field">Zakres numerów skrzyń (bin):</label>
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center">
+          <input id="binStart" placeholder="od" type="number" class="input-xl small" style="width:120px"/>
+          <span class="muted">—</span>
+          <input id="binEnd" placeholder="do" type="number" class="input-xl small" style="width:120px"/>
+          <button id="startPicking" class="btn primary">Rozpocznij</button>
+        </div>
+      </div>
+
+      <div id="pickingArea" class="hidden" style="margin-top:18px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="small muted">Bieżąca skrzynia:</div>
+            <div style="font-size:22px;font-weight:700" id="currentBin">—</div>
+          </div>
+          <div>
+            <div class="small muted">Operator:</div>
+            <div id="operatorName" style="font-weight:600"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <input id="scanInput" class="input-xl" placeholder="Zeskanuj SKU lub wpisz ręcznie..." autocomplete="off"/>
+          <div style="margin-top:8px;display:flex;gap:8px;justify-content:center">
+            <button id="confirmBinBtn" class="btn outline">Potwierdź numer skrzyni (ręcznie)</button>
+            <button id="nextBinBtn" class="btn ghost">Przejdź do następnej</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4>Lista zamówień w pickliście</h4>
+          <ul id="plOrders" class="list" style="max-height:260px;overflow:auto"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- prosty modal -->
+  <div id="modal" class="hidden" style="position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3)">
+    <div style="background:#fff;padding:20px;border-radius:12px;max-width:420px;width:100%">
+      <h4 id="modalTitle">Potwierdź numer skrzyni</h4>
+      <p id="modalText" class="muted">Wprowadź numer skrzyni, aby potwierdzić przypisanie.</p>
+      <input id="modalInput" class="input-xl" placeholder="Numer skrzyni"/>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        <button id="modalCancel" class="btn ghost">Anuluj</button>
+        <button id="modalOk" class="btn primary">Potwierdź</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

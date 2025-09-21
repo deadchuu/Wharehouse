@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Wybór zamówień — Tworzenie listy</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/common.js"></script>
+  <script defer src="js/scan_select.js"></script>
+</head>
+<body class="page page-scan-select">
+  <header class="header thin">
+    <div class="container">
+      <div class="site-title">Tworzenie listy zbiórki</div>
+      <div class="nav-right">
+        <a href="dashboard.html" class="btn ghost">Powrót</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container two-col">
+    <!-- left: lista zamówień z filtrami -->
+    <section class="card">
+      <h3>Lista zamówień</h3>
+      <div class="filters">
+        <input id="filterSearch" placeholder="Szukaj po numerze / kliencie / SKU" class="input-xl" />
+        <div class="filter-row">
+          <label>Min. liczba pozycji <input id="filterMinItems" type="number" min="0" /></label>
+          <label>Max. liczba pozycji <input id="filterMaxItems" type="number" min="0" /></label>
+          <label>Operator dostawy
+            <select id="filterCarrier">
+              <option value="">Wszystkie</option>
+            </select>
+          </label>
+          <button id="applyFilters" class="btn outline">Filtruj</button>
+          <button id="resetFilters" class="btn ghost">Reset</button>
+        </div>
+      </div>
+
+      <div class="orders-list" id="ordersList" style="max-height:520px;overflow:auto"></div>
+    </section>
+
+    <!-- right: panel info + automatyczny wybór -->
+    <section class="card">
+      <h3>Wybrane zamówienia</h3>
+      <p class="muted">Wybrano: <strong id="selectedCount">0</strong></p>
+
+      <label class="field">Nazwa listy zbiórki
+        <input id="picklistName" placeholder="np. Lista - strefa A lub wybierz operatora..." />
+      </label>
+
+      <label class="field">Operator zbiórki
+        <select id="pickerOperator"></select>
+      </label>
+
+      <div class="row-between" style="margin-top:8px">
+        <button id="autoSelectBtn" class="btn">Autowybór</button>
+        <button id="createPicklistBtn" class="btn primary">Utwórz listę</button>
+      </div>
+
+      <!-- rozsuwany panel autowyboru -->
+      <div id="autoPanel" class="hidden" style="margin-top:12px">
+        <h4 class="small">Parametry autowyboru</h4>
+        <label class="field">Wybierz parametr
+          <select id="autoParam">
+            <option value="">-- wybierz --</option>
+            <option value="items_count">Liczba pozycji</option>
+            <option value="distinct_skus">Różne SKU</option>
+            <option value="carrier">Operator dostawy</option>
+            <option value="total">Wartość zamówienia (total)</option>
+          </select>
+        </label>
+
+        <div id="autoParamOptions" class="small muted"></div>
+
+        <div style="margin-top:8px" id="autoControls">
+          <!-- tutaj pojawi się dynamiczny UI (zakresy lub checklist) -->
+        </div>
+
+        <div style="margin-top:12px" class="row-between">
+          <button id="applyAutoSelect" class="btn">Wybierz automatycznie</button>
+          <button id="closeAuto" class="btn ghost">Zamknij</button>
+        </div>
+      </div>
+
+      <hr style="margin:12px 0">
+
+      <h4 class="small">Wybrane pozycje (podgląd)</h4>
+      <ul id="selectedPreview" class="list" style="max-height:220px;overflow:auto"></ul>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,63 +1,43 @@
 document.addEventListener('DOMContentLoaded', async ()=>{
-  // tasks derived from orders + scans -> simple mock
-  let orders = Storage.get('orders', []);
-  let tasks = Storage.get('tasks', null);
-  if(!tasks){
-    // generate tasks from first 8 orders
-    tasks = (orders.slice(0,12)||[]).map((o,i)=>({
-      id: 't'+(1000+i),
-      name: `Picklist #${1000+i}`,
-      order_id: o.order_number || o.order_id || `ORD${1000+i}`,
-      items: Math.floor(Math.random()*6)+1,
-      status: 'pending',
-      assigned_to: Storage.get('session',{}).username || 'demo'
-    }));
-    Storage.set('tasks', tasks);
+  const container = document.getElementById('picklistsContainer');
+  async function loadPicklists(){
+    container.innerHTML = 'Ładowanie...';
+    try {
+      const r = await fetch('api/picklists.php');
+      if(!r.ok) throw new Error('fetch error');
+      const data = await r.json();
+      renderPicklists(data);
+    } catch(e){
+      container.innerHTML = '<p class="muted">Nie można pobrać list (sprawdź backend).</p>';
+    }
   }
 
-  const tasksList = document.getElementById('tasksList');
-  const details = document.getElementById('taskDetails');
-  const taskInfo = document.getElementById('taskInfo');
-  const markPicked = document.getElementById('markPicked');
-  const markPartial = document.getElementById('markPartial');
-
-  function render(){
-    tasksList.innerHTML='';
-    tasks.filter(t=> t.assigned_to === Storage.get('session',{}).username || true).forEach(t=>{
-      const li = document.createElement('li');
-      li.innerHTML = `<div><strong>${t.name}</strong> — ${t.items} шт. <div class="muted">Статус: ${t.status}</div></div>
-                      <div><button class="btn small" data-id="${t.id}">Відкрити</button></div>`;
-      tasksList.appendChild(li);
+  function renderPicklists(data){
+    container.innerHTML = '';
+    if(!Array.isArray(data) || !data.length){
+      container.innerHTML = '<p class="muted">Brak aktywnych list.</p>';
+      return;
+    }
+    data.forEach(pl => {
+      // compute progress: scanned_count / total_skus
+      const total = pl.items.reduce((acc,i)=> acc + (i.qty?parseInt(i.qty||1):1), 0);
+      const scanned = pl.items.reduce((acc,i)=> acc + (i.scanned_count?parseInt(i.scanned_count||0):0), 0);
+      const pct = total ? Math.round(100 * scanned / total) : 0;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.marginBottom='12px';
+      card.innerHTML = `<div style="display:flex;justify-content:space-between">
+          <div><strong>${pl.name}</strong><div class="small muted">ID: ${pl.id} · operator: ${pl.operator || '-'}</div></div>
+          <div><strong>${pct}%</strong></div>
+        </div>
+        <div style="height:10px;background:#eee;border-radius:8px;margin-top:8px;overflow:hidden">
+          <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--accent-weak),var(--accent));"></div>
+        </div>
+        <div class="small muted" style="margin-top:8px">Zamówień: ${pl.items.length} · Pozycji: ${total} · Zeskanowano: ${scanned}</div>
+        <div style="margin-top:8px"><button class="btn outline small" data-id="${pl.id}" onclick="window.location.href='pack.html?picklist_id=${pl.id}'">Otwórz</button></div>`;
+      container.appendChild(card);
     });
   }
 
-  tasksList.addEventListener('click', (e)=>{
-    const btn = e.target.closest('button[data-id]'); if(!btn) return;
-    const id = btn.dataset.id;
-    const t = tasks.find(x=>x.id === id);
-    taskInfo.innerHTML = `<pre>${JSON.stringify(t, null, 2)}</pre>`;
-    details.classList.remove('hidden');
-    details.dataset.current = id;
-  });
-
-  markPicked.addEventListener('click', ()=>{
-    const id = details.dataset.current;
-    if(!id) return;
-    const t = tasks.find(x=>x.id === id); t.status='picked';
-    Storage.set('tasks', tasks);
-    render();
-    alert('Позначено як зібране');
-  });
-
-  markPartial.addEventListener('click', ()=>{
-    const id = details.dataset.current;
-    if(!id) return;
-    const t = tasks.find(x=>x.id === id); t.status='partial';
-    Storage.set('tasks', tasks);
-    render();
-    alert('Позначено як частково зібране');
-  });
-
-  document.getElementById('refreshTasks').addEventListener('click', render);
-  render();
+  loadPicklists();
 });

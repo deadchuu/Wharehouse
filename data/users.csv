@@ -1,0 +1,11 @@
+user_id,username,role,full_name
+u001,darek,picker,Dariusz Kowalski
+u002,ania,picker,Anna Nowak
+u003,marcin,picker,Marcin Zielinski
+u004,marta,picker,Marta Wisniewska
+u005,ewa,sorter,Ewa Lewandowska
+u006,krzysztof,picker,Krzysztof Nowak
+u007,piotr,picker,Piotr Kaczmarek
+u008,ola,picker,Olga Malinowska
+u009,joanna,admin,Joanna Szymanska
+u010,adam,admin,Adam Wojcik

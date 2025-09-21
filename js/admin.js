@@ -1,85 +1,47 @@
 document.addEventListener('DOMContentLoaded', async ()=>{
-  // products stored in localStorage; fallback to /data/products.csv
-  let products = Storage.get('products', null);
-  if(!products){
-    try{
-      const res = await fetch('data/products.csv');
-      if(res.ok){
-        const txt = await res.text();
-        products = csvParse(txt);
-        Storage.set('products', products);
-      } else products = [];
-    } catch(e){ products = []; }
+  const ordersContainer = document.getElementById('adminOrdersList');
+  const productsList = document.getElementById('adminProductsList');
+
+  async function loadOrders(){
+    ordersContainer.innerHTML = 'Ładowanie...';
+    try {
+      const r = await fetch('api/orders.php');
+      const json = await r.json();
+      ordersContainer.innerHTML = '';
+      json.forEach(o => {
+        const el = document.createElement('div'); el.className='list-row'; el.style.padding='8px'; el.innerHTML = `<div><strong>${o.order_number||o.order_id}</strong><div class="small muted">${o.customer} • ${o.total}</div></div>`; ordersContainer.appendChild(el);
+      });
+    } catch(e){ ordersContainer.innerHTML = '<p class="muted">Błąd ładowania</p>'; }
   }
 
-  const list = document.getElementById('productList');
-  const exportBtn = document.getElementById('exportProducts');
-  const importInput = document.getElementById('productImport');
-  const addSample = document.getElementById('addSampleProducts');
-
-  function render(){
-    list.innerHTML = '';
-    products.forEach(p=>{
-      const li = document.createElement('li');
-      li.innerHTML = `<div><strong>${p.name}</strong><div class="muted">${p.sku} • ${p.category} • ${p.price} PLN • stock: ${p.stock}</div></div>
-                      <div><button class="btn small ghost" data-del="${p.product_id}">Видалити</button></div>`;
-      list.appendChild(li);
-    });
-    document.getElementById('statPending').textContent = products.filter(x=> x.stock>0).length;
-    document.getElementById('statPicked').textContent = Storage.get('scans',[]).length;
+  async function loadProducts(){
+    productsList.innerHTML = 'Ładowanie...';
+    try {
+      const r = await fetch('api/products.php');
+      const json = await r.json();
+      productsList.innerHTML = '';
+      json.forEach(p => {
+        const li = document.createElement('li'); li.innerHTML = `<div><strong>${p.name}</strong><div class="small muted">${p.sku} • ${p.category} • ${p.price}</div></div>`; productsList.appendChild(li);
+      });
+    } catch(e){ productsList.innerHTML = '<p class="muted">Błąd ładowania</p>'; }
   }
 
-  list.addEventListener('click', (e)=>{
-    const del = e.target.closest('[data-del]');
-    if(!del) return;
-    const id = del.dataset.del;
-    products = products.filter(p=> p.product_id !== id);
-    Storage.set('products', products);
-    render();
+  document.getElementById('reloadOrders').addEventListener('click', loadOrders);
+  document.getElementById('reloadProducts').addEventListener('click', loadProducts);
+
+  // upload products CSV -> POST to api/products.php (endpoint może nadpisać CSV)
+  document.getElementById('productCsvImport').addEventListener('change', async (e)=>{
+    const f = e.target.files[0]; if(!f) return;
+    const form = new FormData(); form.append('file', f);
+    try {
+      const r = await fetch('api/products.php', {method:'POST', body: form});
+      const j = await r.json();
+      if(j.success){ alert('Produkty załadowane'); loadProducts(); }
+      else alert('Błąd: ' + (j.message||''));
+    } catch(err){ alert('Błąd sieci'); }
   });
 
-  exportBtn.addEventListener('click', ()=>{
-    if(!products.length) return alert('Немає товарів для експорту');
-    const csv = csvStringify(products);
-    downloadFile('products_export.csv', csv);
-  });
+  document.getElementById('openCreateFromAdmin').addEventListener('click', ()=> window.location.href='scan_select.html');
 
-  importInput.addEventListener('change', (e)=>{
-    const f = e.target.files[0];
-    if(!f) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const parsed = csvParse(reader.result);
-      products = products.concat(parsed);
-      Storage.set('products', products);
-      render();
-      alert('Імпортовано локально');
-    };
-    reader.readAsText(f);
-  });
-
-  addSample.addEventListener('click', async ()=>{
-    // re-load from /data/products.csv
-    try{
-      const res = await fetch('data/products.csv');
-      const txt = await res.text();
-      products = csvParse(txt);
-      Storage.set('products', products);
-      render();
-      alert('Завантажено з data/products.csv');
-    } catch(e){ alert('Не вдалось завантажити'); }
-  });
-
-  document.getElementById('exportScanAll').addEventListener('click', ()=>{
-    const scans = Storage.get('scans', []);
-    if(!scans.length) return alert('Нема історії для експорту');
-    downloadFile('scan_history.csv', csvStringify(scans));
-  });
-  document.getElementById('clearScanAll').addEventListener('click', ()=>{
-    if(!confirm('Очистити історію сканів?')) return;
-    Storage.set('scans', []);
-    alert('Історія очищена');
-  });
-
-  render();
+  loadOrders(); loadProducts();
 });
