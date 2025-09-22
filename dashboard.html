@@ -4,36 +4,46 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Panel — Sortowanie paczek</title>
+
+  <!-- główny styl aplikacji + styl dashboardu -->
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- wspólne skrypty -->
   <script defer src="js/common.js"></script>
   <script defer src="js/dashboard.js"></script>
 </head>
 <body class="page page-dashboard">
-  <header class="header">
-    <div class="container">
-      <div class="site-title">Sortowanie paczek</div>
-      <div class="nav-right">
-        <span id="sessionUser" class="muted"></span>
-        <button id="logoutBtn" class="btn ghost">Wyloguj</button>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-title">Sortowanie paczek</div>
+        <div class="brand-sub muted">Panel operacyjny</div>
+      </div>
+
+      <div class="session-block">
+        <div id="sessionUser" class="session-user muted">—</div>
+        <button id="logoutBtn" class="btn ghost small">Wyloguj</button>
       </div>
     </div>
   </header>
 
-  <main class="container grid">
-    <a class="card action" href="scan_select.html">
-      <h2>Skanowanie / tworzenie list</h2>
-      <p class="muted">Wybierz i stwórz listę do zbiorki (picklist).</p>
-    </a>
+  <main class="container">
+    <section class="dashboard-intro card">
+      <h2 class="intro-title">Witaj w panelu</h2>
+      <p class="muted">Poniżej dostępne moduły — widoczne w zależności od Twojej roli. Kliknięcie powiększa kartę i przenosi do modułu.</p>
+    </section>
 
-    <a class="card action" href="pack.html">
-      <h2>Zbieranie</h2>
-      <p class="muted">Okno dla zbieraczy — pokazuje status list i postęp.</p>
-    </a>
-
-    <a id="adminCard" class="card action" href="admin.html">
-      <h2>Administracja</h2>
-      <p class="muted">Zarządzaj produktami i zamówieniami (tylko dla adminów).</p>
-    </a>
+    <!-- miejsce na siatkę kart -->
+    <section id="cardsGrid" class="cards-grid" aria-label="Dostępne moduły">
+      <!-- karty będą rysowane przez js/dashboard.js -->
+    </section>
   </main>
+
+  <footer class="container footer muted small">
+    © 2025 Sortowanie — prototyp
+  </footer>
+
 </body>
 </html>

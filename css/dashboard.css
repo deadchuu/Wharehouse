@@ -1,0 +1,127 @@
+/* Dashboard-specific styles: biało-fioletowa estetyka, blokowy layout, responsywność */
+
+/* tło całej strony (delikatny fiolet) żeby białe karty wyróżniały się */
+body.page-dashboard {
+  background: linear-gradient(180deg, #f4f1fb 0%, #efeafe 100%); /* very light lilac */
+}
+
+/* header */
+.site-header {
+  border-bottom: 1px solid rgba(155, 140, 210, 0.12);
+  padding: 18px 0;
+  margin-bottom: 18px;
+}
+.header-inner { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.brand-title { font-weight:700; color: #4b3aa6; font-size:1.15rem; }
+.brand-sub { font-size:0.92rem; }
+
+/* intro card */
+.dashboard-intro {
+  padding: 18px;
+  margin-bottom: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(15,17,40,0.04);
+}
+
+/* grid of cards */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+/* each card */
+.block-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, #ffffff, #ffffff);
+  border-radius: 14px;
+  padding: 20px;
+  min-height: 160px;
+  transition: transform 220ms cubic-bezier(.2,.9,.29,1), box-shadow 220ms, border-color 220ms;
+  box-shadow: 0 6px 18px rgba(15,17,40,0.06);
+  border: 1px solid rgba(120,108,180,0.06);
+  cursor: pointer;
+  text-decoration: none; /* jeśli element to <a> */
+  color: inherit;
+  will-change: transform;
+  overflow: hidden;
+}
+
+/* icon + title row */
+.block-card .title-row { display:flex; align-items:center; gap:14px; }
+.block-card .card-icon {
+  width:44px;height:44px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background: linear-gradient(135deg, rgba(155,120,240,0.12), rgba(107,70,193,0.06));
+  border: 1px solid rgba(107,70,193,0.08);
+  color: var(--accent, #6b46c1);
+  font-weight:700;
+  font-size:1.1rem;
+}
+
+/* title */
+.block-card h3 { margin:0; font-size:1.05rem; color: #352a78; }
+.block-card p { margin:0; color: #6b7280; font-size:0.92rem; }
+
+/* tag / badge */
+.block-card .tag {
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(155,120,240,0.08);
+  color: #4b3aa6;
+  font-size:0.82rem;
+  border: 1px solid rgba(155,120,240,0.06);
+  width: fit-content;
+}
+
+/* no link underline & stable color for visited */
+.block-card a, .block-card { text-decoration: none !important; color: inherit !important; }
+.block-card:visited { color: inherit; }
+
+/* hover (subtle lift) */
+.block-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(16,24,40,0.10);
+}
+
+/* active (selected) card — slightly larger but not overlapping */
+.block-card.active {
+  transform: scale(1.035);
+  box-shadow: 0 18px 40px rgba(16,24,40,0.14);
+  border-color: rgba(107,70,193,0.14);
+  z-index: 3;
+}
+
+/* prevent active card from covering content: ensure grid gap large enough */
+/* already gap 20px; fine for scale 1.035 */
+
+/* responsive */
+@media (max-width: 900px){
+  .cards-grid { gap:16px; }
+  .block-card { padding:16px; min-height: 140px; }
+}
+
+/* accessibility: focus */
+.block-card:focus { outline: 3px solid rgba(107,70,193,0.12); outline-offset: 2px; }
+
+/* small text */
+.muted { color: #6b7280; }
+
+/* session block */
+.session-block { display:flex; align-items:center; gap:10px; }
+.session-user { font-weight:600; color:#4b3aa6; }
+
+/* footer */
+.footer { padding:16px 0; text-align:center; opacity:0.8; }
+
+/* make cards content centered vertically on small screens */
+@media (max-width: 520px){
+  .block-card { min-height: 120px; text-align:center; align-items:center; }
+  .title-row { justify-content:center; }
+}

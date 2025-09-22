@@ -1,3 +1,4 @@
+// js/common.js (оновлено)
 const Storage = {
   get(key, fallback=null){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e){ return fallback; } },
   set(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
@@ -39,16 +40,27 @@ function downloadFile(filename, content, mime='text/csv'){
 
 function humanTime(ts){ return new Date(ts).toLocaleString(); }
 
-// Auto-load from backend endpoints if dostępne
-async function autoLoadRemote(){
-  // load products and orders via API (if serwer udostępnia)
+/* Auto-load CSV data from api endpoints (if available) OR from data/ files.
+   Сторінки мають доступ до Storage.get('orders') / Storage.get('products') / Storage.get('users') */
+async function autoLoadData(){
+  // try API endpoints first (php backend)
   try {
-    const r1 = await fetch('api/products.php');
-    if(r1.ok){ const json = await r1.json(); Storage.set('products', json); }
-  } catch(e){ /* ignore */ }
+    const rp = await fetch('api/products.php'); if(rp.ok){ const jp = await rp.json(); Storage.set('products', jp); }
+  } catch(e){}
   try {
-    const r2 = await fetch('api/orders.php');
-    if(r2.ok){ const json = await r2.json(); Storage.set('orders', json); }
-  } catch(e){ /* ignore */ }
+    const ro = await fetch('api/orders.php'); if(ro.ok){ const jo = await ro.json(); Storage.set('orders', jo); }
+  } catch(e){}
+  try {
+    const ru = await fetch('data/users.csv'); if(ru.ok){ const txt = await ru.text(); const parsed = csvParse(txt); Storage.set('users', parsed); }
+  } catch(e){}
+  // fallback: attempt to load raw CSV files from /data/ if endpoints not present
+  // products
+  try {
+    const r = await fetch('data/products.csv'); if(r.ok){ const txt = await r.text(); Storage.set('products', csvParse(txt)); }
+  } catch(e){}
+  try {
+    const r2 = await fetch('data/orders.csv'); if(r2.ok){ const txt = await r2.text(); Storage.set('orders', csvParse(txt)); }
+  } catch(e){}
 }
-document.addEventListener('DOMContentLoaded', ()=> { autoLoadRemote(); });
+// run auto load on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', ()=>{ autoLoadData(); });

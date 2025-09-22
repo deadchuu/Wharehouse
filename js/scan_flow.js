@@ -1,65 +1,63 @@
-// scan_flow.js
-document.addEventListener('DOMContentLoaded', async ()=>{
-  // expects query param picklist_id and optional operator
+// js/scan_flow.js (оновлено)
+document.addEventListener('DOMContentLoaded', async ()=> {
   function q(name){ const p = new URLSearchParams(location.search); return p.get(name); }
   const picklistId = q('picklist_id');
-  const operator = q('operator') || localStorage.getItem('session') ? (JSON.parse(localStorage.getItem('session')||'{}').username || '') : '';
+  const operator = q('operator') || (Storage.get('session') && Storage.get('session').username) || 'unknown';
 
-  if(!picklistId) {
-    alert('Brak picklist_id w URL. Wróć do panelu i wybierz listę.');
-    window.location.href = 'dashboard.html';
-    return;
-  }
+  if(!picklistId){ alert('Brak picklist_id w URL'); window.location.href='dashboard.html'; return; }
 
-  // load picklist details from backend
-  const plRes = await fetch('api/picklists.php?id=' + encodeURIComponent(picklistId));
-  if(!plRes.ok){ alert('Nie można pobrać picklist.'); window.location.href='dashboard.html'; return; }
-  const pl = await plRes.json();
+  // fetch picklist from API
+  const r = await fetch('api/picklists.php?id=' + encodeURIComponent(picklistId));
+  if(!r.ok){ alert('Nie można pobrać picklist'); window.location.href='dashboard.html'; return; }
+  const pl = await r.json();
 
-  document.getElementById('plName').textContent = `Picklist: ${pl.name} (${pl.id})`;
-  document.getElementById('plMeta').textContent = `Operator: ${pl.operator || '-'} · Utworzono: ${pl.created_at || '-'}`;
-
-  // prepare orders list (items from pl.items)
-  let items = pl.items || [];
-  // Convert item skus to array for easier matching
-  items = items.map(it => {
-    it.skuList = (it.skus || '').split('|').filter(Boolean);
-    it.assigned = !!it.bin_number;
-    return it;
-  });
-
-  const plOrders = document.getElementById('plOrders');
-  function renderOrders(){
-    plOrders.innerHTML = '';
-    items.forEach(it=>{
-      const li = document.createElement('li');
-      li.innerHTML = `<div><strong>${it.order_id}</strong> <div class="small muted">${it.skus} · qty:${it.qty} · status:${it.status} ${it.bin_number?('· bin:'+it.bin_number):''}</div></div>
-                      <div>${it.assigned ? '<span class="muted">Przypisane</span>' : '<button class="btn outline small" data-order="'+it.order_id+'">Man. przypisz</button>'}</div>`;
-      plOrders.appendChild(li);
-    });
-  }
-
-  renderOrders();
-
-  // picking controls
+  // UI nodes
+  const plNameEl = document.getElementById('plName');
+  const plMeta = document.getElementById('plMeta');
   const binStartInput = document.getElementById('binStart');
   const binEndInput = document.getElementById('binEnd');
   const startBtn = document.getElementById('startPicking');
   const pickingArea = document.getElementById('pickingArea');
   const currentBinEl = document.getElementById('currentBin');
   const scanInput = document.getElementById('scanInput');
+  const plOrdersEl = document.getElementById('plOrders');
   const confirmBinBtn = document.getElementById('confirmBinBtn');
   const nextBinBtn = document.getElementById('nextBinBtn');
-  const operatorName = document.getElementById('operatorName');
 
-  operatorName.textContent = operator || pl.operator || '—';
+  plNameEl.textContent = `Picklist: ${pl.name} (${pl.id})`;
+  plMeta.textContent = `Operator przypisany: ${pl.operator || '-' } · Utworzono: ${pl.created_at || '-'}`;
 
+  // items array with useful fields
+  let items = (pl.items || []).map(it=>{
+    const skuList = (it.skus || '').split('|').filter(Boolean);
+    return { ...it, skuList, assigned: !!it.bin_number, scanned_count: parseInt(it.scanned_count||0,10), bin_number: it.bin_number || '' };
+  });
+
+  function renderItems(){
+    plOrdersEl.innerHTML = '';
+    items.forEach(it => {
+      const li = document.createElement('li');
+      li.className = 'order-block' + (it.assigned && it.scanned_count >= (parseInt(it.qty||1,10)) ? ' complete' : '');
+      li.innerHTML = `<div>
+          <div style="font-weight:700">#${it.order_id}</div>
+          <div class="meta small muted">${it.skus} · qty:${it.qty} · scanned:${it.scanned_count}${it.bin_number?(' · bin:'+it.bin_number):''}</div>
+        </div>
+        <div>
+          ${it.assigned ? '<span class="badge">Bin: ' + (it.bin_number||'—') + '</span>' : '<span class="muted small">nieprzypisane</span>'}
+        </div>`;
+      plOrdersEl.appendChild(li);
+    });
+  }
+
+  renderItems();
+
+  // state
   let binStart = null, binEnd = null, currentBin = null;
-
   startBtn.addEventListener('click', ()=>{
     binStart = parseInt(binStartInput.value,10);
     binEnd = parseInt(binEndInput.value,10);
-    if(isNaN(binStart) || isNaN(binEnd) || binStart > binEnd){ alert('Niepoprawny zakres binów'); return; }
+    if(isNaN(binStart) || isNaN(binEnd) || binStart < 0 || binEnd < binStart){ alert('Nieprawidłowy zakres skrzyń'); return; }
+    if(binEnd > 999){ alert('Maksymalny numer skrzyni to 999'); return; }
     currentBin = binStart;
     currentBinEl.textContent = currentBin;
     pickingArea.classList.remove('hidden');
@@ -67,122 +65,113 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     scanInput.focus();
   });
 
-  // helper to save assignment to backend (updates picklist_items.csv bin_number and writes scan entry)
-  async function assignOrderToBin(order_id, sku){
-    // find item in items
-    const it = items.find(x=> x.order_id === order_id);
-    if(!it) return false;
-    it.bin_number = currentBin;
-    it.assigned = true;
-    it.scanned_count = (parseInt(it.scanned_count||0,10) + 1);
-    // write update to backend: simple approach => rewrite picklist_items.csv: we'll POST small update endpoint?
-    // but we already have api/scan.php that increments scanned_count. Use that to record scan and update.
-    try{
-      const payload = { picklist_id: picklistId, order_code: it.order_code, order_id: it.order_id, sku: sku, user: operatorName.textContent || 'unknown', bin_number: currentBin, action: 'assign' };
-      const res = await fetch('api/scan.php', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-      const json = await res.json();
-      if(json.success) {
-        renderOrders();
-        return true;
-      } else {
-        alert('Błąd zapisu: ' + (json.message || ''));
-        return false;
-      }
-    } catch(e){
-      alert('Błąd sieci podczas zapisu skanu');
-      return false;
-    }
+  // modal + toast helpers
+  function showModalWithBarcode(orderId, orderCode){
+    // build barcode text (we'll show the orderId as barcode string)
+    const modalBackdrop = document.createElement('div'); modalBackdrop.className = 'modal-backdrop';
+    const modal = document.createElement('div'); modal.className = 'modal';
+    modal.innerHTML = `<h3>Zamówienie #${orderId} — gotowe</h3><p class="muted">Kod zamówienia: ${orderCode}</p>
+      <div style="display:flex;justify-content:center;margin-top:12px"><div style="padding:18px;border-radius:8px;border:1px dashed rgba(0,0,0,0.06)">${orderCode}</div></div>
+      <p class="small muted" style="margin-top:10px">Kliknij poza oknem, aby zamknąć.</p>`;
+    modalBackdrop.appendChild(modal);
+    document.body.appendChild(modalBackdrop);
+    // click outside to close
+    modalBackdrop.addEventListener('click', (ev)=>{ if(ev.target === modalBackdrop){ modalBackdrop.remove(); showToast(`Skrzynia: ${currentBin}`); } });
+  }
+  function showToast(msg, timeout=3000){
+    const t = document.createElement('div'); t.className='toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>{ t.remove(); }, timeout);
   }
 
-  // when scanning SKU:
+  // utility: find first candidate order for SKU not fully collected and not assigned beyond capacity
+  function findCandidateForSku(sku){
+    // prefer items where sku exists and scanned_count < qty
+    return items.find(it => (it.skuList.includes(sku) || (it.skus||'').includes(sku)) && (it.scanned_count < Math.max(1, parseInt(it.qty||1,10))));
+  }
+
+  // when scanning SKU
   scanInput.addEventListener('keydown', async (e)=>{
     if(e.key !== 'Enter') return;
     const value = scanInput.value.trim();
     if(!value) return;
     const sku = value;
-    // find first order in items which contains this sku and not assigned fully
-    const candidate = items.find(it => (it.skuList.includes(sku) || (it.skus||'').includes(sku)) && !it.assigned);
+    const candidate = findCandidateForSku(sku);
     if(!candidate){
-      alert('Nie znaleziono zamówienia zawierającego ten SKU lub już przypisane.');
+      // if no candidate and we have bins left -> alert
+      const unassignedLeft = items.filter(it => it.scanned_count < Math.max(1, parseInt(it.qty||1,10))).length;
+      const availableBinsLeft = currentBin !== null ? (binEnd - currentBin + 1) : 0;
+      if(availableBinsLeft <= 0){
+        alert('Brak dostępnych numerów skrzyń — nie można przypisać tego towaru.');
+      } else {
+        alert('Nie znaleziono zamówienia z tym SKU w aktywnej liście lub wszystkie pozycje tego SKU już zebrano.');
+      }
       scanInput.value=''; scanInput.focus(); return;
     }
-    // Now show modal to confirm bin number — expected currentBin
-    showModal(`Potwierdź numer skrzyni: ${currentBin}`, `Wprowadź numer skrzyni ${currentBin} aby przypisać zamówienie ${candidate.order_id}`, async (val)=>{
-      if(String(val) !== String(currentBin)){ alert('Numer skrzyni niezgodny'); return false; }
-      // assign
-      const ok = await assignOrderToBin(candidate.order_id, sku);
-      if(ok){
-        // increment bin? keep same bin until operator scans bin number manually or presses next
-        // spec: after each assign, operator scans bin number and may continue — we'll keep same bin until operator confirms bin close with modal
-        alert('Przypisano zamówienie ' + candidate.order_id + ' do skrzyni ' + currentBin);
-      }
-      scanInput.value=''; scanInput.focus();
-      return true;
-    });
+
+    // check bins left for new assignments: count unassigned orders remaining vs bins left
+    const unassignedOrders = items.filter(it => it.scanned_count < Math.max(1, parseInt(it.qty||1,10)) && !it.bin_number).length;
+    const binsLeft = currentBin !== null ? (binEnd - currentBin + 1) : 0;
+    if(binsLeft <= 0 && !candidate.bin_number){
+      alert('Brak dostępnych skrzyń do przypisania nowych zamówień.');
+      scanInput.value=''; scanInput.focus(); return;
+    }
+    if(binsLeft < unassignedOrders){
+      // warn but allow (user wanted smaller)| spec requested alert when bins less than orders
+      if(!confirm(`Wybrano mniej skrzyń (${binsLeft}) niż nieprzypisanych zamówień (${unassignedOrders}). Kontynuować?`)) { scanInput.value=''; scanInput.focus(); return; }
+    }
+
+    // if candidate has no bin yet, assign currentBin
+    if(!candidate.bin_number){
+      // assign currentBin
+      candidate.bin_number = currentBin;
+    }
+    // increment scanned_count for that candidate
+    candidate.scanned_count = (parseInt(candidate.scanned_count||0,10) + 1);
+    candidate.assigned = true;
+
+    // log scan via API: include action 'scan' and bin_number
+    try {
+      const payload = { picklist_id: picklistId, order_code: candidate.order_code, order_id: candidate.order_id, sku, user: operator, bin_number: candidate.bin_number, action: 'scan' };
+      const resp = await fetch('api/scan.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      const j = await resp.json();
+      if(!j.success) console.warn('Scan API err', j);
+    } catch(e){ console.warn('Network scan log error'); }
+
+    renderItems();
+
+    // if order fully collected now -> show modal with barcode and mark green
+    if(candidate.scanned_count >= Math.max(1, parseInt(candidate.qty||1,10))){
+      candidate.status = 'collected';
+      // write updated item bin_number might be done on scan endpoint — but we already updated local copy
+      showModalWithBarcode(candidate.order_id, candidate.order_code);
+    }
+
+    // do not auto-increment bin; operator will press nextBin or confirm close
+    scanInput.value=''; scanInput.focus();
   });
 
-  // confirm bin manually button (also acts as closing bin)
-  confirmBinBtn.addEventListener('click', ()=> {
-    showModal('Potwierdź zamknięcie skrzyni', `Wprowadź numer skrzyni ${currentBin} aby potwierdzić jej zamknięcie i przejść dalej.`, async (val)=>{
-      if(String(val) !== String(currentBin)){ alert('Numer niezgodny'); return false; }
-      // log closure as scan action
-      try{
-        const res = await fetch('api/scan.php',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ picklist_id: picklistId, order_code:'', order_id:'', sku:'', user: operatorName.textContent || 'unknown', bin_number: currentBin, action:'close_bin' })});
-        const j = await res.json();
-        if(j.success){
-          alert('Skrzynia potwierdzona: ' + currentBin);
-          if(currentBin < binEnd) { currentBin++; currentBinEl.textContent = currentBin; }
-          else { alert('Koniec zakresu skrzyń'); }
-          return true;
-        } else { alert('Błąd: ' + (j.message||'')); return false; }
-      }catch(e){ alert('Błąd sieci'); return false; }
-    });
+  // confirm bin closure: logs action close_bin and increments currentBin
+  confirmBinBtn.addEventListener('click', async ()=>{
+    if(currentBin === null){ alert('Brak aktywnej skrzyni'); return; }
+    if(!confirm(`Potwierdzić zamknięcie skrzyni ${currentBin}?`)) return;
+    try {
+      const resp = await fetch('api/scan.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ picklist_id: picklistId, action:'close_bin', user: operator, bin_number: currentBin }) });
+      const j = await resp.json();
+      if(!j.success) alert('Błąd logu zamknięcia skrzyni');
+    } catch(e){ console.warn('Network error close_bin'); }
+    // after close: advance bin if possible
+    if(currentBin < binEnd) { currentBin++; currentBinEl.textContent = currentBin; }
+    else { showToast('Koniec zakresu skrzyń'); }
   });
 
-  nextBinBtn.addEventListener('click', ()=>{
-    if(currentBin < binEnd){ currentBin++; currentBinEl.textContent = currentBin; }
-    else alert('Jesteś na końcu zakresu');
+  nextBinBtn.addEventListener('click', ()=> {
+    if(currentBin === null) return;
+    if(currentBin < binEnd) { currentBin++; currentBinEl.textContent = currentBin; }
+    else showToast('Koniec zakresu skrzyń');
   });
 
-  // manual assign button in orders list
-  plOrders.addEventListener('click', async (e)=>{
-    const btn = e.target.closest('button[data-order]');
-    if(!btn) return;
-    const orderId = btn.dataset.order;
-    // prompt for SKU (in case multiple)
-    const sku = prompt('Wprowadź SKU do przypisania (potwierdzenie bin wymagane później):');
-    if(!sku) return;
-    // require modal confirmation as above
-    showModal(`Potwierdź numer skrzyni: ${currentBin}`, `Wprowadź numer skrzyni ${currentBin}`, async (val)=>{
-      if(String(val) !== String(currentBin)){ alert('Numer skrzyni niezgodny'); return false; }
-      const ok = await assignOrderToBin(orderId, sku);
-      if(ok) alert('Przypisano ręcznie');
-      return ok;
-    });
-  });
-
-  // simple modal implementation
-  const modal = document.getElementById('modal');
-  const modalInput = document.getElementById('modalInput');
-  document.getElementById('modalCancel').addEventListener('click', ()=> hideModal());
-  document.getElementById('modalOk').addEventListener('click', ()=> {
-    if(typeof modal._resolve === 'function') modal._resolve(modalInput.value.trim());
-  });
-
-  function showModal(title, text, onOk){
-    document.getElementById('modalTitle').textContent = title;
-    document.getElementById('modalText').textContent = text;
-    modalInput.value = '';
-    modal.classList.remove('hidden');
-    modalInput.focus();
-    return new Promise((resolve)=>{
-      modal._resolve = async (val) => {
-        // call onOk validator (may be async)
-        const ok = await onOk(val);
-        if(ok){ hideModal(); resolve(true); } else { /* keep modal open */ }
-      };
-    });
-  }
-  function hideModal(){ modal.classList.add('hidden'); if(typeof modal._resolve === 'function') { modal._resolve = null; } }
+  // keyboard accessibility
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'F2'){ scanInput.focus(); } });
 
 });
